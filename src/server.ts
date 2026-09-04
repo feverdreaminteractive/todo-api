@@ -1,15 +1,10 @@
-import express from 'express';
+import { createApp } from './app';
+import { JsonFileTodoRepository } from './repository/json-file-todo-repository';
+import { config } from './config';
 
-// Placeholder entrypoint for the scaffolding step (issue #1). This gets replaced
-// by the real app.ts/server.ts split in issue #5 (HTTP layer) -- for now it just
-// proves the toolchain (build/dev/start) works end to end.
-const app = express();
-const port = process.env.PORT ?? 3000;
+const repository = new JsonFileTodoRepository(config.dataFile);
+const app = createApp(repository);
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok' });
-});
-
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+app.listen(config.port, () => {
+  console.log(`Listening on port ${config.port}`);
 });
