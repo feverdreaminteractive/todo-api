@@ -83,8 +83,9 @@ curl http://localhost:3000/todos?completed=false&sortBy=dueDate
 ### API testing
 
 A [Postman collection](postman/todo-api.postman_collection.json) covers the full REST surface,
-including validation-error and not-found cases. Import it directly by URL in Postman, or run it
-headless with [newman](https://github.com/postmanlabs/newman):
+including validation-error and not-found cases. **[View it live in Postman](https://documenter.getpostman.com/view/57960081/2sBYAvvqa5)**
+— browsable docs with example requests/responses, no import needed. Or import the file directly
+by URL, or run it headless with [newman](https://github.com/postmanlabs/newman):
 
 ```sh
 npx newman run postman/todo-api.postman_collection.json
