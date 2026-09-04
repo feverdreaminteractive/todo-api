@@ -5,6 +5,10 @@
 A REST API to-do list app, built for a take-home skills assessment. TypeScript + Express, a
 layered/repository architecture, zod validation, and three tiers of automated tests.
 
+For a deeper technical dive (request-flow diagram, why validation lives in two places, the
+actual storage swap point), see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). For the dev
+workflow (branch strategy, labels, PR process), see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ## Setup & running it
 
 Requires Node.js 22+.
