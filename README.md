@@ -80,6 +80,16 @@ curl -X POST http://localhost:3000/todos \
 curl http://localhost:3000/todos?completed=false&sortBy=dueDate
 ```
 
+### API testing
+
+A [Postman collection](postman/todo-api.postman_collection.json) covers the full REST surface,
+including validation-error and not-found cases. Import it directly by URL in Postman, or run it
+headless with [newman](https://github.com/postmanlabs/newman):
+
+```sh
+npx newman run postman/todo-api.postman_collection.json
+```
+
 ## Design choices
 
 **Layered architecture, repository pattern.** `http` (routes/controllers/middleware) → `services`
