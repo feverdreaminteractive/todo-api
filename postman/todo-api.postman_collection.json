@@ -1,0 +1,299 @@
+{
+  "info": {
+    "name": "To-Do API",
+    "description": "REST API for the To-Do List take-home assignment. Full CRUD + complete/incomplete, zod validation, filtering/sorting. See the repo README for architecture/design write-up.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "todoId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Create todo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const body = pm.response.json();",
+              "  pm.collectionVariables.set('todoId', body.id);",
+              "}",
+              "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+              "pm.test('Response has an id', () => pm.expect(pm.response.json().id).to.be.a('string'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Buy milk\",\n  \"description\": \"2%, from the corner store\",\n  \"dueDate\": \"2026-12-25\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/todos", "host": ["{{baseUrl}}"], "path": ["todos"] }
+      }
+    },
+    {
+      "name": "Create todo - validation error (missing title)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+              "pm.test('Error shape is correct', () => {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.error.code).to.eql('VALIDATION_ERROR');",
+              "  pm.expect(body.error.issues).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"description\": \"No title, should fail\"\n}" },
+        "url": { "raw": "{{baseUrl}}/todos", "host": ["{{baseUrl}}"], "path": ["todos"] }
+      }
+    },
+    {
+      "name": "List todos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Response is an array', () => pm.expect(pm.response.json()).to.be.an('array'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/todos", "host": ["{{baseUrl}}"], "path": ["todos"] }
+      }
+    },
+    {
+      "name": "List todos - filtered + sorted",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/todos?completed=false&sortBy=dueDate&order=asc",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos"],
+          "query": [
+            { "key": "completed", "value": "false" },
+            { "key": "sortBy", "value": "dueDate" },
+            { "key": "order", "value": "asc" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "List todos - invalid query param",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/todos?sortBy=notAField",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos"],
+          "query": [{ "key": "sortBy", "value": "notAField" }]
+        }
+      }
+    },
+    {
+      "name": "Get todo by id",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/todos/{{todoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "{{todoId}}"]
+        }
+      }
+    },
+    {
+      "name": "Get todo by id - not found",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 404', () => pm.response.to.have.status(404));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/todos/00000000-0000-0000-0000-000000000000",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "00000000-0000-0000-0000-000000000000"]
+        }
+      }
+    },
+    {
+      "name": "Update todo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Title updated', () => pm.expect(pm.response.json().title).to.eql('Buy oat milk instead'));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Buy oat milk instead\"\n}" },
+        "url": {
+          "raw": "{{baseUrl}}/todos/{{todoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "{{todoId}}"]
+        }
+      }
+    },
+    {
+      "name": "Update todo - rejects isCompleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400 (use PATCH .../complete instead)', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"isCompleted\": true\n}" },
+        "url": {
+          "raw": "{{baseUrl}}/todos/{{todoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "{{todoId}}"]
+        }
+      }
+    },
+    {
+      "name": "Mark complete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('isCompleted is true', () => pm.expect(pm.response.json().isCompleted).to.eql(true));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": {
+          "raw": "{{baseUrl}}/todos/{{todoId}}/complete",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "{{todoId}}", "complete"]
+        }
+      }
+    },
+    {
+      "name": "Mark incomplete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('isCompleted is false', () => pm.expect(pm.response.json().isCompleted).to.eql(false));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": {
+          "raw": "{{baseUrl}}/todos/{{todoId}}/incomplete",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "{{todoId}}", "incomplete"]
+        }
+      }
+    },
+    {
+      "name": "Delete todo",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 204', () => pm.response.to.have.status(204));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/todos/{{todoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "{{todoId}}"]
+        }
+      }
+    },
+    {
+      "name": "Delete todo - not found (run twice)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404 (already deleted above)', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/todos/{{todoId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["todos", "{{todoId}}"]
+        }
+      }
+    }
+  ]
+}
