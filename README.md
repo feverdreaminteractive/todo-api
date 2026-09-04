@@ -9,6 +9,19 @@ For a deeper technical dive (request-flow diagram, why validation lives in two p
 actual storage swap point), see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). For the dev
 workflow (branch strategy, labels, PR process), see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
+## Process
+
+Built via a small, real dev workflow rather than one squashed commit: one GitHub issue per unit
+of work, a matching [Linear](https://linear.app/feverdreaminteractive/team/FEV/all) ticket
+cross-linked to it, its own branch and PR, CI-checked before merge. `main` is the integration
+branch; `prod` only advances via an explicit promotion PR that gates the actual release.
+
+An independent code-review pass (agent-driven, separate from the PRs' own review) surfaced a
+handful of real issues — two genuine race conditions, a filter edge case, a schema gap. Rather
+than quietly fix or ignore them, they're tracked as a
+[**Roadmap**](../../milestone/4) — real, scoped work, deliberately left unimplemented because
+it's outside what this assessment needs to demonstrate.
+
 ## Setup & running it
 
 Requires Node.js 22+.
