@@ -2,8 +2,12 @@
 
 `mcp/server.ts` exposes this API's to-do management as [Model Context Protocol](https://modelcontextprotocol.io)
 tools, so an LLM agent (Claude Desktop, Claude Code, or any other MCP client) can create, list,
-update, complete, and delete to-dos directly — the same pattern this role's own product uses to
-wrap Shopify's API as MCP tools, just applied to this smaller API instead.
+update, complete, and delete to-dos directly, in plain conversation instead of through curl or
+the frontend.
+
+A REST API with a clean, well-scoped resource (to-dos: create, read, update, two well-defined
+state transitions, delete) is a natural fit for this — each endpoint maps to exactly one tool
+with a clear, describable contract, which is exactly the shape MCP tools want.
 
 ## Running it
 
@@ -47,9 +51,7 @@ code and message, not a generic failure.
 
 ## Why this exists
 
-Not part of the graded assignment — added specifically because the role this take-home is for
-builds an MCP server wrapping Shopify's API. Wrapping this project's own REST API the same way
-is the most direct, literal demonstration of that exact skill available within the scope of a
-take-home: a real MCP server, verified end to end (every tool exercised through an actual MCP
-client over the real protocol, not just called as plain functions), talking to a real HTTP API
-that already has its own layered architecture and test suite behind it.
+Not part of the graded assignment — added to demonstrate wrapping an existing, already-tested
+REST API as an MCP server, verified end to end (every tool exercised through an actual MCP
+client over the real protocol, not just called as plain functions) rather than left as an
+untested sketch.

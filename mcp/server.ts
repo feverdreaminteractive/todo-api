@@ -104,12 +104,16 @@ server.registerTool(
   {
     title: 'Update a to-do',
     description: 'Update a to-do\'s title, description, or due date (at least one field required). Cannot change completion status here -- use complete_todo/incomplete_todo instead.',
-    inputSchema: {
+    inputSchema: z.object({
       id: z.string().describe('The to-do id'),
       title: z.string().min(1).max(200).optional(),
       description: z.string().max(2000).optional(),
       dueDate: z.string().optional(),
-    },
+    }).refine(
+      ({ title, description, dueDate }) =>
+        title !== undefined || description !== undefined || dueDate !== undefined,
+      { message: 'Provide at least one field to update' }
+    ),
   },
   async ({ id, ...rest }) => {
     try {
