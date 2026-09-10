@@ -174,3 +174,7 @@ in isolation).
   datastore, not file locking tricks.
 - **No auth/multi-user support** — out of scope per the assignment; every todo is global, not
   scoped to a user.
+
+---
+
+© 2026 Ryan Clayton. Submitted for take-home evaluation purposes; not licensed for reuse.
