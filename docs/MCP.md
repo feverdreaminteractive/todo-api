@@ -32,6 +32,28 @@ Point it at a non-default API instance with `TODO_API_URL` if needed:
 TODO_API_URL=http://localhost:4000 npm run mcp
 ```
 
+## Connecting it to Claude Desktop
+
+Add an entry to Claude Desktop's config file
+(`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+
+```json
+{
+  "mcpServers": {
+    "todo-api": {
+      "command": "npx",
+      "args": ["tsx", "/absolute/path/to/todo-api/mcp/server.ts"]
+    }
+  }
+}
+```
+
+Use an absolute path — Claude Desktop doesn't launch the process from inside this project
+directory, so a relative one won't resolve. Keep `npm run dev` running separately (the MCP
+server is a thin proxy over HTTP; it doesn't start the API itself), then fully quit and reopen
+Claude Desktop so it picks up the config change. A new chat should show `todo-api` as a
+connected server, and you can just ask it to manage your to-dos in plain English.
+
 ## Tools
 
 | Tool | Maps to |
