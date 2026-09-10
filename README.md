@@ -7,7 +7,8 @@ layered/repository architecture, zod validation, and three tiers of automated te
 
 For a deeper technical dive (request-flow diagram, why validation lives in two places, the
 actual storage swap point), see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). For the dev
-workflow (branch strategy, labels, PR process), see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+workflow (branch strategy, labels, PR process), see [`CONTRIBUTING.md`](CONTRIBUTING.md). For an
+MCP server exposing this API's to-dos as agent-callable tools, see [`docs/MCP.md`](docs/MCP.md).
 
 ## Process
 

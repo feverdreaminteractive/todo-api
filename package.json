@@ -8,12 +8,14 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
+    "mcp": "tsx mcp/server.ts",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "express": "^4.21.2",
     "zod": "^3.24.1"
   },
