@@ -100,6 +100,15 @@ Most MCP clients show an expandable indicator (e.g. a small tool icon) on any re
 tool was actually called — if you don't see that, the model didn't invoke `todo-api`, regardless
 of what it said back.
 
+## Verified in CI, not just manually
+
+`mcp/smoke-test.ts` runs on every push and PR: CI builds the app, starts the real API from
+`dist/`, then spawns the actual MCP server as a real MCP client would and exercises all 7 tools
+over the genuine protocol — full CRUD, the completion toggle, and both error paths (the
+empty-update rejection, and a not-found lookup). It exits non-zero on any assertion failure, so
+a regression here fails the build the same way a broken unit test would, not just a manual
+`npm run mcp` someone forgot to run.
+
 ## Why this exists
 
 Not part of the graded assignment — added to demonstrate wrapping an existing, already-tested
