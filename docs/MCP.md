@@ -34,8 +34,26 @@ TODO_API_URL=http://localhost:4000 npm run mcp
 
 ## Connecting it to Claude Desktop
 
-Add an entry to Claude Desktop's config file
-(`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Claude Desktop is a GUI app and doesn't inherit your shell's `PATH` or use your shell config
+(`.zshrc`, `.bashrc`, nvm/volta/fnm setup, etc.) — so a config that just says `"command": "npx"`
+often fails with "Server disconnected" because the app can't find `npx` or the `node` it needs.
+The steps below use *your* actual paths, not a guessed default, so this works regardless of how
+you installed Node.
+
+**1. Find your own paths.** In your normal terminal (the one you'd run `npm run dev` from):
+
+```sh
+which npx      # e.g. /usr/local/bin/npx, or ~/.volta/bin/npx, or ~/.nvm/versions/node/.../bin/npx
+echo $PATH     # your full PATH — copy this whole value for step 3
+```
+
+**2. Open Claude Desktop's config file** (create it if it doesn't exist):
+
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+**3. Add a `todo-api` entry**, using the `which npx` output from step 1 as `command`, this
+project's absolute path to `mcp/server.ts`, and the `echo $PATH` output from step 1 as `env.PATH`:
 
 ```json
 {
@@ -51,19 +69,26 @@ Add an entry to Claude Desktop's config file
 }
 ```
 
-Use an absolute path to the project file — Claude Desktop doesn't launch the process from
-inside this project directory, so a relative one won't resolve. Keep `npm run dev` running
-separately (the MCP server is a thin proxy over HTTP; it doesn't start the API itself), then
-fully quit and reopen Claude Desktop so it picks up the config change. A new chat should show
-`todo-api` as a connected server, and you can just ask it to manage your to-dos in plain
-English.
+If `claude_desktop_config.json` already has other `mcpServers` entries, add `todo-api` alongside
+them rather than replacing the file — the example above is the whole file only if you don't
+already have one.
 
-**If it shows "Failed" / "Server disconnected":** Claude Desktop (a GUI app) doesn't inherit
-your shell's `PATH`, so it often can't find `npx` or the `node` it needs to run — this is why
-the config above uses an absolute path to `npx` (`which npx` to find yours) and sets `PATH`
-explicitly rather than relying on the app's default environment. Check
-`~/Library/Logs/Claude/mcp-server-<name>.log` for the actual startup error if it still fails —
-it's far more informative than the UI's generic "Server disconnected" message.
+**4. Keep the API running separately** — the MCP server is a thin proxy over HTTP, it doesn't
+start the API itself:
+
+```sh
+npm run dev
+```
+
+**5. Fully quit and reopen Claude Desktop** (not just close the window) so it re-reads the
+config, then start a new chat. It should show `todo-api` as a connected server, and you can just
+ask it to manage your to-dos in plain English — see [Example prompts](#example-prompts) below.
+
+**If it still shows "Failed" / "Server disconnected":** check
+`~/Library/Logs/Claude/mcp-server-todo-api.log` for the actual startup error — it's far more
+informative than the UI's generic message. A `npm warn exec ... will be installed` followed by a
+timeout on the *first* attempt is normal (`npx` fetching `tsx` fresh); a second attempt right
+after should connect immediately once it's cached.
 
 ## Tools
 
